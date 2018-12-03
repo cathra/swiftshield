@@ -6,18 +6,23 @@ class AutomaticSwiftShield: Protector {
     let projectToBuild: String
     let schemeToBuild: String
     let modulesToIgnore: Set<String>
+    private let filesToIgnore: Set<String>
 
     var isWorkspace: Bool {
         return projectToBuild.hasSuffix(".xcworkspace")
     }
 
-    init(basePath: String,
-         projectToBuild: String,
-         schemeToBuild: String,
-         modulesToIgnore: Set<String>,
-         protectedClassNameSize: Int,
-         dryRun: Bool,
-         sourceKit: SourceKit = .init()) {
+    init(
+        basePath: String,
+        projectToBuild: String,
+        schemeToBuild: String,
+        modulesToIgnore: Set<String>,
+        protectedClassNameSize: Int,
+        dryRun: Bool,
+        sourceKit: SourceKit = .init(),
+        filesToIgnore: Set<String> = []
+    ) {
+        self.filesToIgnore = filesToIgnore
         self.sourceKit = sourceKit
         self.projectToBuild = projectToBuild
         self.schemeToBuild = schemeToBuild
@@ -64,6 +69,10 @@ class AutomaticSwiftShield: Protector {
         for fileData in fileDataArray {
             let file = fileData.file
             let module = fileData.module
+            if filesToIgnore.contains(file.name) {
+                Logger.log(.skipObfuscationForFile(file))
+                continue
+            }
             Logger.log(.indexing(file: file))
             let resp = index(file: file, args: module.compilerArguments)
             resp.recurseOver(uid: .entitiesId) { [unowned self] variant in

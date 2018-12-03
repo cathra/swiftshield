@@ -35,10 +35,11 @@ let protectedClassNameSize = obfuscationCharacterCount == 0 ? 32 : obfuscationCh
 
 let protector: Protector
 if automatic {
+    let filesToIgnore = UserDefaults.standard.string(forKey: "ignore-files")?.components(separatedBy: ",") ?? []
     let schemeToBuild = UserDefaults.standard.string(forKey: "automatic-project-scheme") ?? ""
     let projectToBuild = UserDefaults.standard.string(forKey: "automatic-project-file") ?? ""
     let modulesToIgnore = UserDefaults.standard.string(forKey: "ignore-modules")?.components(separatedBy: ",") ?? []
-    protector = AutomaticSwiftShield(basePath: basePath, projectToBuild: projectToBuild, schemeToBuild: schemeToBuild, modulesToIgnore: Set(modulesToIgnore), protectedClassNameSize: protectedClassNameSize, dryRun: dryRun)
+    protector = AutomaticSwiftShield(basePath: basePath, projectToBuild: projectToBuild, schemeToBuild: schemeToBuild, modulesToIgnore: Set(modulesToIgnore), protectedClassNameSize: protectedClassNameSize, dryRun: dryRun, filesToIgnore: Set(filesToIgnore))
 } else {
     let tag = UserDefaults.standard.string(forKey: "tag") ?? "__s"
     protector = ManualSwiftShield(basePath: basePath, tag: tag, protectedClassNameSize: protectedClassNameSize, dryRun: dryRun)

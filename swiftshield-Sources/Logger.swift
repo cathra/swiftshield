@@ -13,6 +13,7 @@ enum LogType {
     case projectError
     case ignoreModules(modules: Set<String>)
     case plistError(info: String)
+    case skipObfuscationForFile(File)
 
     //Shared
     case overwriting(file: File)
@@ -43,6 +44,8 @@ enum LogType {
 
     var description: String {
         switch self {
+        case let .skipObfuscationForFile(file):
+            return "!-!-! Skipping obfuscation for file: \(file.name) !-!-!"
         case .buildingProject:
             return "Building project to gather modules and compiler arguments..."
         case .compilerArgumentsError:
